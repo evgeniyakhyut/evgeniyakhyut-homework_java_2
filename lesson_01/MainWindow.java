@@ -60,6 +60,10 @@ public class MainWindow extends JFrame {
     }
 
     private void deleteLastBall() {
+        if (sprites.length == 0) {
+            return;
+        }
+
         Sprite [] newSprites = new Sprite[sprites.length - 1];
 
         for (int i = 0; i < newSprites.length; i++) {
