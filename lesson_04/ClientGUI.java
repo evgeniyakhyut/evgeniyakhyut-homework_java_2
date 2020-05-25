@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class ClientGUI extends JFrame implements ActionListener, Thread.UncaughtExceptionHandler {
 
@@ -47,7 +50,10 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
                 "user_with_an_exceptionally_long_name_in_this_chat"};
         userList.setListData(users);
         scrollUser.setPreferredSize(new Dimension(100, 0));
+
         cbAlwaysOnTop.addActionListener(this);
+        btnSend.addActionListener(this);
+        tfMessage.addActionListener(this);
 
         panelTop.add(tfIPAddress);
         panelTop.add(tfPort);
@@ -66,14 +72,42 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
         add(panelBottom, BorderLayout.SOUTH);
 
         setVisible(true);
+        tfMessage.grabFocus();
     }
 
+    public void sendMessage() {
+        String currentMessage = tfMessage.getText().strip();
+
+        if (currentMessage.length() == 0) {
+            return;
+        }
+
+        log.append(currentMessage + "\n");
+        addMessageToFile(currentMessage + "\n");
+
+        tfMessage.setText("");
+    }
+
+    public void addMessageToFile(String message) {
+        try {
+            FileOutputStream fos = new FileOutputStream("log.txt", true);
+
+            fos.write(message.getBytes());
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
+
         if (src == cbAlwaysOnTop) {
             setAlwaysOnTop(cbAlwaysOnTop.isSelected());
+        } else if (src == btnSend || src == tfMessage) {
+            sendMessage();
         } else {
             throw new RuntimeException("Unknown source: " + src);
         }
