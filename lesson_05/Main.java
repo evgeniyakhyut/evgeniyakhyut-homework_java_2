@@ -1,15 +1,19 @@
 package ru.gb.jtwo.elesson.online;
 
+import java.util.Arrays;
+
 public class Main {
     public static void main(String[] args) {
-        firstMethod();
-        secondMethod();
+        float[] arr1 = firstMethod();
+        float[] arr2 = secondMethod();
+
+        System.out.println(Arrays.equals(arr1, arr2));
     }
 
     static final int size = 10_000_000;
     static final int h = size / 2;
 
-    public static void firstMethod() {
+    public static float[] firstMethod() {
         float[] arr = new float[size];
 
         for (int i = 0; i < size; i++) {
@@ -22,9 +26,11 @@ public class Main {
         }
 
         System.out.println(System.currentTimeMillis() - a);
+
+        return arr;
     }
 
-    public static void secondMethod() {
+    public static float[] secondMethod() {
         float[] arr = new float[size];
         float[] a1 = new float[h];
         float[] a2 = new float[h];
@@ -37,8 +43,8 @@ public class Main {
         System.arraycopy(arr, 0, a1, 0, h);
         System.arraycopy(arr, h, a2, 0, h);
 
-        Thread t1 = new Thread(new RunnableWithArray(a1));
-        Thread t2 = new Thread(new RunnableWithArray(a2));
+        Thread t1 = new Thread(new RunnableWithArray(a1, 0));
+        Thread t2 = new Thread(new RunnableWithArray(a2, h));
 
         t1.start();
         t2.start();
@@ -56,7 +62,7 @@ public class Main {
         System.arraycopy(a2, 0, arr, h, h);
 
         System.out.println(System.currentTimeMillis() - a);
+
+        return arr;
     }
-
-
 }
